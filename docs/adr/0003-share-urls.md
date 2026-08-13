@@ -44,3 +44,7 @@ the link encodes, so pasting a link and regenerating the record reproduces the s
 - **Trade-offs:** the rationale does not travel in the link (it lives only in the exported Markdown) —
   a deliberate privacy choice; the 1800-char cap bounds how much state a link can carry, which is
   ample for 8 constraints but would need revisiting if the model grew large.
+- **Runtime note:** native Brotli is unavailable in the browser WebAssembly runtime (without the
+  `wasm-tools` workload), so in practice the codec emits the uncompressed (raw) representation there.
+  The payload is tiny, so this costs nothing and stays well within the cap; compression remains an
+  opportunistic optimisation where the runtime supports it. The codec never throws on either path.

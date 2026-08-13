@@ -38,7 +38,18 @@ dotnet publish src/Vector.App -c Release
 |---|---|---|
 | `Vector.Engine.Tests` | Determinism, golden + culture-invariant digest, hard-veto dominance, accounting identity, order-invariance, soft-score level flip, near-tie, sensitivity, architecture (no Blazor/JSON in Domain/Engine). | **38 passed** |
 | `Vector.Data.Tests` | Content load/mapping validation, calibration vs. the real engine (see below), share-codec round-trip/fuzz/never-throws/decompression-bound, Markdown export golden + no-auto-fill. | **46 passed** |
-| `Vector.App.Tests` | bUnit core-flow tests. | _finalized in Phase 5_ |
+| `Vector.App.Tests` | bUnit core-flow tests (scenario load, live recompute, hard-conflict persistence, contribution inspection, chart textual alternative, sensitivity, no-auto-fill rationale, share round-trip, bad-link rejection, export interop, accessible names, non-claims copy). | **14 passed** |
+
+**Total: 98 tests, all green.** `dotnet format --verify-no-changes` passes.
+
+### Browser verification (real WebAssembly runtime)
+
+Ran `dotnet run --project src/Vector.App` and exercised the app in a browser: the studio loads;
+selecting *Internal policy assistant* reproduces the calibrated ranking live (RAG 928,575 leading);
+**Copy share link** produces a `v1.` fragment and announces "Link copied"; reloading that link
+hydrates the exact profile; **Export as Markdown** downloads `vector-decision-record.md` (contains the
+`Sha256:` digest and the literal `[[ ]]` rationale prompts); a bad link (`#v9.…`) falls back to a blank
+profile with a "different version of Vector" banner. No unhandled exceptions.
 
 ### Calibration (real engine, real content)
 
@@ -71,6 +82,10 @@ dotnet publish src/Vector.App -c Release
   See [ADR 0002](docs/adr/0002-transparent-mcda.md).
 - **Sub-path hosting.** `index.html` uses `<base href="/">`; hosting under a sub-path (e.g. GitHub
   Pages project sites) requires changing it and providing SPA fallback.
+- **Brotli in WebAssembly.** The browser WASM runtime (without the `wasm-tools` workload) does not
+  provide native Brotli, so `ShareCodec` degrades to an uncompressed (raw) payload there — caught and
+  handled in the codec, verified in-browser. Compression is a non-issue for the tiny share payload; the
+  raw path stays far within the size cap. This surfaced only at runtime, not in the CoreCLR test suite.
 
 ## Cross-review questions (for the cross-model reviewer)
 
