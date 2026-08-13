@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Vector.App/Vector.App.csproj" />
+    <Project Path="src/Vector.Data/Vector.Data.csproj" />
+    <Project Path="src/Vector.Domain/Vector.Domain.csproj" />
+    <Project Path="src/Vector.Engine/Vector.Engine.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Vector.App.Tests/Vector.App.Tests.csproj" />
+    <Project Path="tests/Vector.Data.Tests/Vector.Data.Tests.csproj" />
+    <Project Path="tests/Vector.Engine.Tests/Vector.Engine.Tests.csproj" />
+  </Folder>
+</Solution>
