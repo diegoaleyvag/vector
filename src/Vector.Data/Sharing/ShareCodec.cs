@@ -264,25 +264,46 @@ public static class ShareCodec
 
     private static byte[] CompressBrotli(byte[] source)
     {
-        var buffer = new byte[BrotliEncoder.GetMaxCompressedLength(source.Length)];
-        if (!BrotliEncoder.TryCompress(source, buffer, out var bytesWritten, BrotliQuality, BrotliWindow))
+        try
         {
-            // Compression cannot fail in practice for a buffer sized via GetMaxCompressedLength, but if it
-            // ever did, falling back to the raw bytes keeps Encode total and lets the raw/compressed
-            // size comparison naturally prefer the (larger) raw representation.
+            var buffer = new byte[BrotliEncoder.GetMaxCompressedLength(source.Length)];
+            if (!BrotliEncoder.TryCompress(source, buffer, out var bytesWritten, BrotliQuality, BrotliWindow))
+            {
+                // Compression cannot fail in practice for a buffer sized via GetMaxCompressedLength, but if it
+                // ever did, falling back to the raw bytes keeps Encode total and lets the raw/compressed
+                // size comparison naturally prefer the (larger) raw representation.
+                return source;
+            }
+
+            return buffer[..bytesWritten];
+        }
+        catch (PlatformNotSupportedException)
+        {
+            // Some runtimes (notably the browser WebAssembly runtime without the wasm-tools workload) do not
+            // provide native Brotli. Returning the source unchanged makes Encode fall back to the raw ('r')
+            // representation, which needs no native compression and stays well within the size cap for this
+            // tiny payload. Encode therefore works everywhere; it simply skips compression when unavailable.
             return source;
         }
-
-        return buffer[..bytesWritten];
     }
 
     private static bool TryDecompressBrotli(ReadOnlySpan<byte> source, int cap, out byte[] result)
     {
         var buffer = new byte[cap];
-        if (BrotliDecoder.TryDecompress(source, buffer, out var bytesWritten))
+        try
         {
-            result = buffer[..bytesWritten];
-            return true;
+            if (BrotliDecoder.TryDecompress(source, buffer, out var bytesWritten))
+            {
+                result = buffer[..bytesWritten];
+                return true;
+            }
+        }
+        catch (PlatformNotSupportedException)
+        {
+            // Native Brotli is unavailable on this runtime (see CompressBrotli). A compressed ('c') payload
+            // cannot be read here; report it as a failed decompression rather than throwing. In practice the
+            // app only ever produces raw ('r') payloads on such runtimes, so this path is only reachable via
+            // a hand-crafted link and is rejected cleanly.
         }
 
         result = [];
