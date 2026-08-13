@@ -1,0 +1,34 @@
+@inject StudioState State
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+
+<button type="button" @onclick="ShareAsync">Copy share link</button>
+
+@code {
+    [CascadingParameter(Name = "Announce")]
+    public Action<string>? Announce { get; set; }
+
+    private async Task ShareAsync()
+    {
+        var payload = State.ToSharePayload();
+
+        // ShareCodec.Encode is total: it falls back to an uncompressed payload when native Brotli is
+        // unavailable (as in the browser WebAssembly runtime), so it never throws here.
+        var encoded = ShareCodec.Encode(payload);
+
+        var dotIndex = encoded.IndexOf('.');
+        var body = dotIndex >= 0 ? encoded[(dotIndex + 1)..] : encoded;
+        if (body.Length > ShareCodec.MaxEncodedChars)
+        {
+            Announce?.Invoke("Configuration too large to share.");
+            return;
+        }
+
+        var baseUri = Nav.Uri.Split('#')[0];
+        var fullUrl = $"{baseUri}#{encoded}";
+
+        Nav.NavigateTo(fullUrl, forceLoad: false);
+        await JS.InvokeVoidAsync("copyToClipboard", fullUrl);
+        Announce?.Invoke("Link copied.");
+    }
+}

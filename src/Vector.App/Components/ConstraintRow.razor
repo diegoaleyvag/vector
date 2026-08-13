@@ -1,0 +1,90 @@
+@implements IDisposable
+@inject StudioState State
+
+@{
+    var def = State.Rules.Constraint(Dimension);
+    var setting = State.Profile[Dimension];
+    var level = def.Levels[setting.LevelIndex];
+    var rowId = $"constraint-{Dimension}";
+    var maxLevel = def.Levels.Length - 1;
+}
+
+<fieldset>
+    <legend>@def.Title</legend>
+    <p>@def.Help</p>
+
+    <div class="field-row">
+        <label for="@(rowId + "-range")">Level for @def.Title</label>
+        <input id="@(rowId + "-range")"
+               type="range"
+               min="0"
+               max="@maxLevel"
+               value="@setting.LevelIndex"
+               aria-valuetext="@level.Name"
+               @oninput="OnLevelInput" />
+    </div>
+
+    <div class="field-row">
+        <label for="@(rowId + "-number")">Level number for @def.Title</label>
+        <input id="@(rowId + "-number")"
+               type="number"
+               min="0"
+               max="@maxLevel"
+               value="@setting.LevelIndex"
+               aria-valuetext="@level.Name"
+               @onchange="OnLevelInput" />
+    </div>
+
+    <p><strong>@level.Name</strong> — @level.Help</p>
+    <p class="weight-sum-note">Evidence: @level.Evidence</p>
+
+    <div class="field-row">
+        <label for="@(rowId + "-weight")">Importance of @def.Title</label>
+        <select id="@(rowId + "-weight")" value="@setting.WeightTier.ToString(CultureInfo.InvariantCulture)" @onchange="OnWeightChanged">
+            <option value="0">Ignore</option>
+            <option value="1">Low</option>
+            <option value="2">Medium</option>
+            <option value="3">High</option>
+        </select>
+    </div>
+
+    <div class="field-row">
+        <label for="@(rowId + "-hard")">Treat @def.Title as a hard requirement</label>
+        <input id="@(rowId + "-hard")" type="checkbox" checked="@setting.IsHard" @onchange="OnHardChanged" />
+    </div>
+</fieldset>
+
+@code {
+    [Parameter, EditorRequired]
+    public ConstraintDimension Dimension { get; set; }
+
+    // Loading a scenario (or any other edit) changes State.Profile[Dimension] without changing this
+    // component's own Dimension parameter, so it must subscribe directly to notice the update.
+    protected override void OnInitialized() => State.OnChange += StateHasChanged;
+
+    public void Dispose() => State.OnChange -= StateHasChanged;
+
+    private void OnLevelInput(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
+        {
+            State.SetLevel(Dimension, value);
+        }
+    }
+
+    private void OnWeightChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
+        {
+            State.SetWeightTier(Dimension, value);
+        }
+    }
+
+    private void OnHardChanged(ChangeEventArgs e)
+    {
+        if (e.Value is bool isHard)
+        {
+            State.SetHard(Dimension, isHard);
+        }
+    }
+}

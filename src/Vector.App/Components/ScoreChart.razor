@@ -1,0 +1,27 @@
+<div class="score-chart" role="img" aria-label="@AriaSummary">
+    @foreach (var result in Rankings)
+    {
+        var pattern = Rules.Pattern(result.Pattern);
+        var percent = (double)result.ScoreScaled / EngineConstants.Scale * 100;
+        <div class="score-chart-row @(result.IsEligible ? "" : "vetoed")">
+            <span>@pattern.Name</span>
+            <span class="score-chart-track">
+                <span class="score-chart-fill" style="width: @(percent.ToString("0.0", CultureInfo.InvariantCulture))%"></span>
+            </span>
+            <span>@result.ScoreScaled.ToString("N0", CultureInfo.InvariantCulture)</span>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ImmutableArray<PatternResult> Rankings { get; set; }
+
+    [Parameter, EditorRequired]
+    public RuleSet Rules { get; set; } = null!;
+
+    private string AriaSummary =>
+        "Ranking, most leading first: " + string.Join(
+            ", ",
+            Rankings.Select(r => $"{Rules.Pattern(r.Pattern).Name}, rank {r.Rank}{(r.IsEligible ? string.Empty : " (vetoed)")}"));
+}

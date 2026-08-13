@@ -1,0 +1,35 @@
+@{
+    var pattern = Rules.Pattern(Result.Pattern);
+}
+
+<article class="pattern-column">
+    <h3>Rank @Result.Rank — @pattern.Name</h3>
+
+    @if (!Result.IsEligible)
+    {
+        <p class="badge vetoed">Cannot meet a hard requirement</p>
+    }
+    else
+    {
+        <p class="badge eligible">Eligible</p>
+    }
+
+    <p>@pattern.Summary</p>
+    <p>
+        Score: @Result.ScoreScaled.ToString("N0", CultureInfo.InvariantCulture) / 1,000,000
+        (@((Result.Score * 100).ToString("0.0", CultureInfo.InvariantCulture))%)
+    </p>
+
+    <details>
+        <summary>Contribution detail for @pattern.Name</summary>
+        <ContributionList Contributions="Result.Contributions" Rules="Rules" />
+    </details>
+</article>
+
+@code {
+    [Parameter, EditorRequired]
+    public PatternResult Result { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public RuleSet Rules { get; set; } = null!;
+}

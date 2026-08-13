@@ -1,0 +1,70 @@
+@implements IDisposable
+@inject StudioState State
+
+<section aria-labelledby="sensitivity-heading" class="card">
+    <h2 id="sensitivity-heading">Sensitivity</h2>
+
+    @if (State.Outcome.MinFlipDistance == int.MaxValue)
+    {
+        <p>The leading option is robust to single-step changes.</p>
+    }
+    else
+    {
+        <p>
+            The smallest single-dimension change that could flip the leading option is
+            @State.Outcome.MinFlipDistance level step(s).
+        </p>
+    }
+
+    @if (Pivotal.Count > 0)
+    {
+        <ul>
+            @foreach (var entry in Pivotal)
+            {
+                var def = State.Rules.Constraint(entry.Dimension);
+                var testedLabel = State.Rules.LevelLabel(entry.Dimension, entry.TestedLevel);
+                var baselinePattern = State.Rules.Pattern(entry.BaselineTop);
+                var testedPattern = State.Rules.Pattern(entry.TestedTop);
+                var verb = entry.TestedLevel > entry.BaselineLevel ? "Raising" : "Lowering";
+                <li>
+                    @verb @def.Title to @testedLabel would change the leading option from
+                    @baselinePattern.Name to @testedPattern.Name.
+                </li>
+            }
+        </ul>
+
+        <table class="sensitivity-table">
+            <caption>Pivotal one-step sensitivity probes</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Dimension</th>
+                    <th scope="col">Baseline level</th>
+                    <th scope="col">Tested level</th>
+                    <th scope="col">Baseline leader</th>
+                    <th scope="col">Tested leader</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in Pivotal)
+                {
+                    var def = State.Rules.Constraint(entry.Dimension);
+                    <tr>
+                        <th scope="row">@def.Title</th>
+                        <td>@State.Rules.LevelLabel(entry.Dimension, entry.BaselineLevel)</td>
+                        <td>@State.Rules.LevelLabel(entry.Dimension, entry.TestedLevel)</td>
+                        <td>@State.Rules.Pattern(entry.BaselineTop).Name</td>
+                        <td>@State.Rules.Pattern(entry.TestedTop).Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+
+@code {
+    private List<SensitivityEntry> Pivotal => [.. State.Outcome.Sensitivity.Where(e => e.IsPivotal)];
+
+    protected override void OnInitialized() => State.OnChange += StateHasChanged;
+
+    public void Dispose() => State.OnChange -= StateHasChanged;
+}

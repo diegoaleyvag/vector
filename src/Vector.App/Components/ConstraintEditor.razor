@@ -1,0 +1,27 @@
+@implements IDisposable
+@inject StudioState State
+
+<section class="constraint-editor card" aria-labelledby="constraints-heading">
+    <h2 id="constraints-heading">Constraints</h2>
+    <p class="weight-sum-note">
+        Importance is set per dimension as a tier (Ignore/Low/Medium/High); Vector never silently renormalizes it.
+        Current tier total: @TotalWeightTier.
+    </p>
+
+    @foreach (var dimension in Dimensions)
+    {
+        <ConstraintRow Dimension="dimension" />
+    }
+</section>
+
+@code {
+    private static readonly ConstraintDimension[] Dimensions =
+        [.. Enum.GetValues<ConstraintDimension>().OrderBy(d => (int)d)];
+
+    private int TotalWeightTier => State.Profile.Settings.Sum(s => s.WeightTier);
+
+    // Needed for the tier-total note above; each ConstraintRow separately subscribes for its own display.
+    protected override void OnInitialized() => State.OnChange += StateHasChanged;
+
+    public void Dispose() => State.OnChange -= StateHasChanged;
+}

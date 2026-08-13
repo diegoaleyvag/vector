@@ -1,0 +1,77 @@
+@implements IDisposable
+@inject StudioState State
+
+<section class="scenario-picker card" aria-labelledby="scenario-picker-heading">
+    <h2 id="scenario-picker-heading">Scenario</h2>
+
+    <div role="radiogroup" aria-labelledby="scenario-picker-heading" class="scenario-options">
+        @foreach (var scenario in State.Scenarios)
+        {
+            var inputId = $"scenario-{scenario.Id}";
+            <label class="scenario-option" for="@inputId">
+                <input id="@inputId"
+                       type="radio"
+                       name="scenario"
+                       value="@scenario.Id"
+                       checked="@(State.SelectedScenarioId == scenario.Id)"
+                       @onchange="@(() => SelectScenarioAsync(scenario.Id))" />
+                @scenario.Title
+            </label>
+        }
+        <label class="scenario-option" for="scenario-blank">
+            <input id="scenario-blank"
+                   type="radio"
+                   name="scenario"
+                   value=""
+                   checked="@(State.SelectedScenarioId is null)"
+                   @onchange="SelectBlankAsync" />
+            Blank profile
+        </label>
+    </div>
+
+    @if (SelectedScenario is not null)
+    {
+        <div class="scenario-framing">
+            @if (!string.IsNullOrEmpty(SelectedScenario.Description))
+            {
+                <p>@SelectedScenario.Description</p>
+            }
+            @if (!SelectedScenario.Assumptions.IsDefaultOrEmpty)
+            {
+                <ul>
+                    @foreach (var assumption in SelectedScenario.Assumptions)
+                    {
+                        <li>@assumption</li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    /// <summary>Raised after a scenario (or the blank profile) is selected, so the host page can move focus.</summary>
+    [Parameter]
+    public EventCallback OnScenarioSelected { get; set; }
+
+    // Reacts to edits made elsewhere (e.g. a ConstraintRow change clears SelectedScenarioId) since
+    // StudioState is injected rather than passed down as a parameter.
+    protected override void OnInitialized() => State.OnChange += StateHasChanged;
+
+    public void Dispose() => State.OnChange -= StateHasChanged;
+
+    private Scenario? SelectedScenario =>
+        State.SelectedScenarioId is null ? null : State.Scenarios.FirstOrDefault(s => s.Id == State.SelectedScenarioId);
+
+    private async Task SelectScenarioAsync(string id)
+    {
+        State.LoadScenario(id);
+        await OnScenarioSelected.InvokeAsync();
+    }
+
+    private async Task SelectBlankAsync()
+    {
+        State.StartBlank();
+        await OnScenarioSelected.InvokeAsync();
+    }
+}

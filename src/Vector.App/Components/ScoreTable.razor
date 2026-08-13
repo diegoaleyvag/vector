@@ -1,0 +1,31 @@
+<table class="score-table">
+    <caption>Ranking, score, and eligibility for each architecture pattern (textual alternative to the chart above)</caption>
+    <thead>
+        <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Pattern</th>
+            <th scope="col">Score</th>
+            <th scope="col">Eligible</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Rankings)
+        {
+            var pattern = Rules.Pattern(result.Pattern);
+            <tr>
+                <th scope="row">@result.Rank</th>
+                <td>@pattern.Name</td>
+                <td>@result.ScoreScaled.ToString("N0", CultureInfo.InvariantCulture)</td>
+                <td>@(result.IsEligible ? "Yes" : "No")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired]
+    public ImmutableArray<PatternResult> Rankings { get; set; }
+
+    [Parameter, EditorRequired]
+    public RuleSet Rules { get; set; } = null!;
+}

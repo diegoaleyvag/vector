@@ -1,0 +1,28 @@
+@implements IDisposable
+@inject StudioState State
+
+<section aria-labelledby="comparison-heading">
+    <h2 id="comparison-heading">Comparison</h2>
+
+    <HardConflictPanel Rankings="State.Outcome.Rankings" Rules="State.Rules" />
+
+    <ScoreChart Rankings="State.Outcome.Rankings" Rules="State.Rules" />
+    <ScoreTable Rankings="State.Outcome.Rankings" Rules="State.Rules" />
+
+    <div class="comparison-columns">
+        @foreach (var result in State.Outcome.Rankings)
+        {
+            <PatternColumn Result="result" Rules="State.Rules" />
+        }
+    </div>
+</section>
+
+@code {
+    // StudioState is injected (not passed as a parameter), so this component must subscribe directly
+    // to react to changes made elsewhere in the tree (e.g. a ConstraintRow edit or a scenario load) -
+    // Blazor does not cascade re-renders to unrelated components just because an ancestor re-rendered.
+    protected override void OnInitialized() => State.OnChange += StateHasChanged;
+
+    public void Dispose() => State.OnChange -= StateHasChanged;
+}
+

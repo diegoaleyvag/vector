@@ -1,0 +1,16 @@
+@inject StudioState State
+
+<section aria-labelledby="rationale-heading" class="card">
+    <h2 id="rationale-heading">Rationale</h2>
+    <p>Vector never writes your rationale — the export includes prompts for you to answer.</p>
+
+    <label for="rationale-textarea">Your rationale notes</label>
+    <textarea id="rationale-textarea" rows="6" value="@State.RationaleMarkdown" @oninput="OnInput"></textarea>
+</section>
+
+@code {
+    private void OnInput(ChangeEventArgs e)
+    {
+        State.SetRationale(e.Value?.ToString() ?? string.Empty);
+    }
+}

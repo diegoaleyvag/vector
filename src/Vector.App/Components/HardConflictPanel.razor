@@ -1,0 +1,31 @@
+@{
+    var withConflicts = Rankings.Where(r => !r.HardConflicts.IsDefaultOrEmpty).ToList();
+}
+
+@if (withConflicts.Count > 0)
+{
+    <div class="hard-conflict-panel" role="note" aria-label="Hard constraint conflicts">
+        <h3>Hard constraint conflicts</h3>
+        @foreach (var result in withConflicts)
+        {
+            var pattern = Rules.Pattern(result.Pattern);
+            <div>
+                <p><strong>@pattern.Name</strong> <span class="badge vetoed">Cannot meet a hard requirement</span></p>
+                <ul>
+                    @foreach (var conflict in result.HardConflicts)
+                    {
+                        <li>@conflict.Reason</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ImmutableArray<PatternResult> Rankings { get; set; }
+
+    [Parameter, EditorRequired]
+    public RuleSet Rules { get; set; } = null!;
+}

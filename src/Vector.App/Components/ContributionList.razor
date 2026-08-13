@@ -1,0 +1,55 @@
+<div class="contribution-list">
+    <table>
+        <caption>Per-dimension contribution detail</caption>
+        <thead>
+            <tr>
+                <th scope="col">Dimension</th>
+                <th scope="col">Capability</th>
+                <th scope="col">Demand</th>
+                <th scope="col">Shortfall</th>
+                <th scope="col">Weight (bp)</th>
+                <th scope="col">Weighted contribution</th>
+                <th scope="col">Fit</th>
+                <th scope="col">Rationale</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var contribution in Contributions)
+            {
+                var def = Rules.Constraint(contribution.Dimension);
+                <tr>
+                    <th scope="row">@def.Title</th>
+                    <td>@contribution.Capability</td>
+                    <td>@contribution.Demand</td>
+                    <td>@contribution.Shortfall</td>
+                    <td>@contribution.WeightBasisPoints</td>
+                    <td>@contribution.WeightedContributionScaled</td>
+                    <td class="@SignClass(contribution.Sign)">@SignText(contribution.Sign)</td>
+                    <td>@contribution.Rationale</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ImmutableArray<ContributionTrace> Contributions { get; set; }
+
+    [Parameter, EditorRequired]
+    public RuleSet Rules { get; set; } = null!;
+
+    private static string SignClass(ContributionSign sign) => sign switch
+    {
+        ContributionSign.Positive => "sign-positive",
+        ContributionSign.Negative => "sign-negative",
+        _ => "sign-neutral",
+    };
+
+    private static string SignText(ContributionSign sign) => sign switch
+    {
+        ContributionSign.Positive => "▲ meets",
+        ContributionSign.Negative => "▼ short",
+        _ => "even",
+    };
+}

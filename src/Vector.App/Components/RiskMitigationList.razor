@@ -1,0 +1,64 @@
+@implements IDisposable
+@inject StudioState State
+
+<section aria-labelledby="risks-heading" class="card">
+    <h2 id="risks-heading">Risks &amp; mitigations</h2>
+    <p class="weight-sum-note">Shown for the leading pattern, or both co-leading patterns during a near-tie.</p>
+
+    @foreach (var result in ShortlistedResults)
+    {
+        var pattern = State.Rules.Pattern(result.Pattern);
+        <div>
+            <h3>@pattern.Name</h3>
+
+            @if (result.ActiveRisks.IsDefaultOrEmpty && result.ActiveAdvisories.IsDefaultOrEmpty)
+            {
+                <p>No active risks or advisories recorded for this pattern under the current profile.</p>
+            }
+
+            @foreach (var risk in result.ActiveRisks)
+            {
+                <div class="risk-item risk-severity-@risk.Severity">
+                    <p><strong>@risk.Title</strong> (@risk.Severity)</p>
+                    <p>@risk.Description</p>
+                    @if (!risk.Mitigations.IsDefaultOrEmpty)
+                    {
+                        <ul>
+                            @foreach (var mitigation in risk.Mitigations)
+                            {
+                                <li>@mitigation.Description (Effort: @mitigation.Effort)</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            }
+
+            @foreach (var advisory in result.ActiveAdvisories)
+            {
+                <div class="advisory-item">
+                    <p>@advisory.Message</p>
+                    @if (!advisory.Mitigations.IsDefaultOrEmpty)
+                    {
+                        <ul>
+                            @foreach (var mitigation in advisory.Mitigations)
+                            {
+                                <li>@mitigation.Description (Effort: @mitigation.Effort)</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private IEnumerable<PatternResult> ShortlistedResults =>
+        State.Outcome.HasNearTie
+            ? State.Outcome.Rankings.Where(r => r.Rank is 1 or 2)
+            : State.Outcome.Rankings.Where(r => r.Rank == 1);
+
+    protected override void OnInitialized() => State.OnChange += StateHasChanged;
+
+    public void Dispose() => State.OnChange -= StateHasChanged;
+}

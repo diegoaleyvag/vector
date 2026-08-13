@@ -26,4 +26,11 @@
     <ProjectReference Include="..\..\src\Vector.Domain\Vector.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\..\src\Vector.App\wwwroot\data\vector-knowledge.v1.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>data\vector-knowledge.v1.json</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>

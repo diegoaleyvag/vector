@@ -1,16 +1,42 @@
 ﻿@inherits LayoutComponentBase
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <header class="site-header">
+        <span class="brand">Vector</span>
+        <span class="brand-subtitle">Architecture decision support</span>
+    </header>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+    <div role="status" aria-live="polite" class="live-region">@_liveMessage</div>
 
-        <article class="content px-4">
+    <main id="main">
+        <CascadingValue Value="_announce" Name="Announce">
             @Body
-        </article>
+        </CascadingValue>
     </main>
+
+    <footer class="site-footer">
+        <p>
+            Vector is a decision-support teaching tool. Scores are coarse ordinal judgments, not measurements;
+            close scores are effectively ties. It does not certify or endorse any architecture.
+        </p>
+    </footer>
 </div>
+
+@code {
+    private string? _liveMessage;
+    private Action<string> _announce = default!;
+
+    protected override void OnInitialized()
+    {
+        _announce = Announce;
+    }
+
+    /// <summary>Announces a message in the page's polite live region. Passed to descendants as a cascading "Announce" delegate.</summary>
+    private void Announce(string message)
+    {
+        _liveMessage = message;
+        StateHasChanged();
+    }
+}

@@ -1,6 +1,23 @@
-﻿<Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(Pages.NotFound)">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-</Router>
+﻿@using Microsoft.Extensions.DependencyInjection
+@using Vector.App.Services
+@inject IServiceProvider ServiceProvider
+
+@{
+    var startupError = ServiceProvider.GetService<StartupError>();
+}
+
+@if (startupError is not null)
+{
+    <main class="startup-error" role="alert">
+        <h1>Vector could not load its decision data (@startupError.Message). This build may be incompatible with the data files.</h1>
+    </main>
+}
+else
+{
+    <Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+    </Router>
+}

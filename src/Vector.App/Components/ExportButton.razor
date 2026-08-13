@@ -1,0 +1,29 @@
+@inject StudioState State
+@inject IJSRuntime JS
+
+<button type="button" @onclick="ExportAsync">Export as Markdown</button>
+
+@code {
+    [CascadingParameter(Name = "Announce")]
+    public Action<string>? Announce { get; set; }
+
+    private async Task ExportAsync()
+    {
+        var scenario = State.SelectedScenarioId is string id
+            ? State.Scenarios.FirstOrDefault(s => s.Id == id)
+            : null;
+
+        var input = new ExportInput(
+            scenario,
+            State.Profile,
+            State.Rules,
+            State.Outcome,
+            State.RationaleMarkdown,
+            DateTime.UtcNow.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+        var markdown = MarkdownExporter.Export(input);
+
+        await JS.InvokeVoidAsync("downloadFile", "vector-decision-record.md", markdown);
+        Announce?.Invoke("Decision record downloaded.");
+    }
+}

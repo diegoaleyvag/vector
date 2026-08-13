@@ -1,0 +1,91 @@
+@page "/"
+@implements IDisposable
+@inject StudioState State
+@inject NavigationManager Nav
+
+<h1 @ref="_heading" tabindex="-1">Vector — architecture decision support</h1>
+<p>
+    Explore which of four canonical LLM architecture patterns is leading under your constraints. Vector
+    offers decision support, not a verdict — it never claims one architecture is "best" or "correct", only
+    which one is leading under the constraints you set.
+</p>
+
+@if (_banner is not null)
+{
+    <div class="banner" role="status">
+        <span>@_banner</span>
+        <button type="button" @onclick="DismissBanner">Dismiss</button>
+    </div>
+}
+
+<ScenarioPicker OnScenarioSelected="RequestFocus" />
+<ConstraintEditor />
+<ComparisonView />
+<SensitivityPanel />
+<RiskMitigationList />
+<RationaleEditor />
+<ActionBar />
+
+@code {
+    private ElementReference _heading;
+    private bool _pendingFocus;
+    private string? _banner;
+
+    protected override Task OnInitializedAsync()
+    {
+        State.OnChange += HandleStateChanged;
+
+        var uri = Nav.Uri;
+        var hashIndex = uri.IndexOf('#');
+        var fragment = hashIndex >= 0 ? uri[(hashIndex + 1)..] : string.Empty;
+
+        if (!string.IsNullOrEmpty(fragment))
+        {
+            var result = ShareCodec.Decode(fragment);
+            if (result.Ok && result.Payload is not null)
+            {
+                State.HydrateFromShare(result.Payload);
+                _pendingFocus = true;
+            }
+            else
+            {
+                _banner = BannerFor(result.Error);
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_pendingFocus)
+        {
+            _pendingFocus = false;
+            await _heading.FocusAsync();
+        }
+    }
+
+    private void HandleStateChanged() => InvokeAsync(StateHasChanged);
+
+    private Task RequestFocus()
+    {
+        _pendingFocus = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private void DismissBanner() => _banner = null;
+
+    /// <summary>Plain-language reason shown when a share fragment could not be applied.</summary>
+    private static string BannerFor(ShareError error) => error switch
+    {
+        ShareError.BadVersion => "This link is for a different version of Vector.",
+        ShareError.TooLarge => "This link is too large.",
+        _ => "This link is malformed.",
+    };
+
+    public void Dispose()
+    {
+        State.OnChange -= HandleStateChanged;
+    }
+}
