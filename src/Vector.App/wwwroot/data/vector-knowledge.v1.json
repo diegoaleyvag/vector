@@ -1,0 +1,932 @@
+{
+  "schemaVersion": 1,
+  "rulesVersion": "1.0.0",
+  "contentRevision": 1,
+  "engineCompatRange": ">=1.0.0 <2.0.0",
+  "nearTieMarginBasisPoints": 300,
+  "constraints": [
+    {
+      "dimension": "DataSensitivity",
+      "title": "Data Sensitivity",
+      "polarity": "Demand",
+      "help": "How much regulatory or confidentiality control the content demands.",
+      "maxLevel": 4,
+      "defaultWeightTier": 2,
+      "levels": [
+        {
+          "value": 0,
+          "name": "Public",
+          "help": "Safe to share outside the organization.",
+          "evidence": "A published help article."
+        },
+        {
+          "value": 1,
+          "name": "Internal",
+          "help": "Low harm if disclosed inside the org.",
+          "evidence": "Team notes or an internal wiki."
+        },
+        {
+          "value": 2,
+          "name": "Confidential",
+          "help": "Access-controlled business information.",
+          "evidence": "Unreleased plans or internal policies."
+        },
+        {
+          "value": 3,
+          "name": "Regulated",
+          "help": "Subject to legal handling obligations.",
+          "evidence": "Personal data covered by privacy law."
+        },
+        {
+          "value": 4,
+          "name": "Restricted",
+          "help": "A strict handling regime with audit duties.",
+          "evidence": "Health, payment, or similarly governed categories (illustrative)."
+        }
+      ],
+      "demandCurve": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "dimension": "LatencyTarget",
+      "title": "Latency Target",
+      "polarity": "Demand",
+      "help": "How quickly a result is needed.",
+      "maxLevel": 3,
+      "defaultWeightTier": 1,
+      "levels": [
+        {
+          "value": 0,
+          "name": "Relaxed",
+          "help": "Offline or background processing is fine.",
+          "evidence": "An overnight batch job."
+        },
+        {
+          "value": 1,
+          "name": "Standard",
+          "help": "A short wait is acceptable.",
+          "evidence": "A few-second asynchronous reply."
+        },
+        {
+          "value": 2,
+          "name": "Interactive",
+          "help": "Someone is waiting on the answer.",
+          "evidence": "A chat response in a UI."
+        },
+        {
+          "value": 3,
+          "name": "Immediate",
+          "help": "Consistently tight, low latency is required.",
+          "evidence": "Inline assistance while typing."
+        }
+      ],
+      "demandCurve": [
+        0,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "dimension": "CostPressure",
+      "title": "Cost Pressure",
+      "polarity": "Demand",
+      "help": "How strongly per-item cost constrains the design.",
+      "maxLevel": 3,
+      "defaultWeightTier": 1,
+      "levels": [
+        {
+          "value": 0,
+          "name": "Low",
+          "help": "Cost is not a limiting factor.",
+          "evidence": "Occasional, low-volume use."
+        },
+        {
+          "value": 1,
+          "name": "Moderate",
+          "help": "Cost matters but there is headroom.",
+          "evidence": "Steady but bounded volume."
+        },
+        {
+          "value": 2,
+          "name": "High",
+          "help": "Cost strongly shapes design choices.",
+          "evidence": "Large volume under a budget."
+        },
+        {
+          "value": 3,
+          "name": "Severe",
+          "help": "A hard per-item budget ceiling applies.",
+          "evidence": "Millions of items at fractions of a cent each."
+        }
+      ],
+      "demandCurve": [
+        0,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "dimension": "DeterminismReproducibility",
+      "title": "Determinism & Reproducibility",
+      "polarity": "Demand",
+      "help": "How repeatable and defensible outputs must be.",
+      "maxLevel": 3,
+      "defaultWeightTier": 1,
+      "levels": [
+        {
+          "value": 0,
+          "name": "Flexible",
+          "help": "Run-to-run variation is acceptable.",
+          "evidence": "Exploratory drafting."
+        },
+        {
+          "value": 1,
+          "name": "Preferred",
+          "help": "Consistency is valued but not required.",
+          "evidence": "Internal summaries."
+        },
+        {
+          "value": 2,
+          "name": "Required",
+          "help": "Same input yields materially the same output, and this is checked.",
+          "evidence": "A validated extraction step."
+        },
+        {
+          "value": 3,
+          "name": "Auditable",
+          "help": "Outputs must be reproducible and defensible on review.",
+          "evidence": "Regulated reporting."
+        }
+      ],
+      "demandCurve": [
+        0,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "dimension": "KnowledgeFreshness",
+      "title": "Knowledge Freshness",
+      "polarity": "Demand",
+      "help": "How current the underlying facts must be.",
+      "maxLevel": 3,
+      "defaultWeightTier": 2,
+      "levels": [
+        {
+          "value": 0,
+          "name": "Stable",
+          "help": "Relies only on long-lived knowledge.",
+          "evidence": "Definitions that rarely change."
+        },
+        {
+          "value": 1,
+          "name": "Periodic",
+          "help": "Facts change on a slow cadence.",
+          "evidence": "Figures revised each quarter."
+        },
+        {
+          "value": 2,
+          "name": "Frequent",
+          "help": "Facts change weekly or daily.",
+          "evidence": "Policies updated as rules evolve."
+        },
+        {
+          "value": 3,
+          "name": "Current",
+          "help": "Answers must reflect the latest available information.",
+          "evidence": "The most recently published version of a document."
+        }
+      ],
+      "demandCurve": [
+        0,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "dimension": "ToolActionNeed",
+      "title": "Tool & Action Need",
+      "polarity": "Demand",
+      "help": "Whether the task must reach outside the prompt to act.",
+      "maxLevel": 3,
+      "defaultWeightTier": 1,
+      "levels": [
+        {
+          "value": 0,
+          "name": "None",
+          "help": "Nothing beyond the prompt is needed.",
+          "evidence": "Rewriting a supplied passage."
+        },
+        {
+          "value": 1,
+          "name": "Lookup",
+          "help": "Read-only reference fetches are needed.",
+          "evidence": "Retrieving a passage."
+        },
+        {
+          "value": 2,
+          "name": "Guarded",
+          "help": "Bounded, side-effecting actions behind guards.",
+          "evidence": "Creating a draft ticket."
+        },
+        {
+          "value": 3,
+          "name": "Autonomous",
+          "help": "Open-ended, multi-step tool use.",
+          "evidence": "Search, synthesize, and iterate across sources."
+        }
+      ],
+      "demandCurve": [
+        0,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "dimension": "HumanReview",
+      "title": "Human Review",
+      "polarity": "Demand",
+      "help": "How much human oversight the process requires.",
+      "maxLevel": 4,
+      "defaultWeightTier": 1,
+      "levels": [
+        {
+          "value": 0,
+          "name": "Unattended",
+          "help": "Output is used without review.",
+          "evidence": "Low-stakes suggestions."
+        },
+        {
+          "value": 1,
+          "name": "SpotCheck",
+          "help": "Occasional ad-hoc checks.",
+          "evidence": "Periodic quality sampling."
+        },
+        {
+          "value": 2,
+          "name": "Sampled",
+          "help": "A defined sample is reviewed.",
+          "evidence": "Auditing a fixed percentage."
+        },
+        {
+          "value": 3,
+          "name": "PreUse",
+          "help": "Every output is reviewed before use.",
+          "evidence": "Analyst-in-the-loop drafting."
+        },
+        {
+          "value": 4,
+          "name": "PerAction",
+          "help": "A human approves each consequential action.",
+          "evidence": "Sign-off before any external effect."
+        }
+      ],
+      "demandCurve": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "dimension": "OperationalMaturity",
+      "title": "Operational Maturity",
+      "polarity": "Capacity",
+      "help": "How much monitoring, evaluation, and on-call support the deployment context can provide (higher = more capacity).",
+      "maxLevel": 3,
+      "defaultWeightTier": 1,
+      "levels": [
+        {
+          "value": 0,
+          "name": "Nascent",
+          "help": "Little monitoring or evaluation capacity.",
+          "evidence": "A first prototype."
+        },
+        {
+          "value": 1,
+          "name": "Developing",
+          "help": "Basic logging and manual checks.",
+          "evidence": "An early internal tool."
+        },
+        {
+          "value": 2,
+          "name": "Established",
+          "help": "Monitoring, evaluation sets, and an incident process exist.",
+          "evidence": "A supported production service."
+        },
+        {
+          "value": 3,
+          "name": "Advanced",
+          "help": "Automated evaluation, guardrails, on-call, and rollback.",
+          "evidence": "A mature platform team."
+        }
+      ],
+      "demandCurve": [
+        4,
+        3,
+        1,
+        0
+      ]
+    }
+  ],
+  "patterns": [
+    {
+      "id": "DirectStructuredCall",
+      "name": "Direct structured model call",
+      "summary": "A single model call that returns output shaped to a fixed schema, with no retrieval or external tools. It is the simplest and fastest option and the easiest to operate, but it depends entirely on the model's built-in knowledge and offers limited grounding or reproducibility.",
+      "capabilities": [
+        4,
+        4,
+        4,
+        3,
+        0,
+        0,
+        3,
+        4
+      ],
+      "rationales": [
+        "No retrieval or tools means data stays within a single call, keeping the exposure surface small.",
+        "A single round trip with no retrieval or tool hops keeps latency lowest and most predictable.",
+        "One model call per item is the cheapest baseline, which suits tight cost ceilings.",
+        "A single generation is fairly repeatable, though output can drift without constrained decoding.",
+        "It relies on knowledge fixed at training time and cannot reflect updates without changing the model.",
+        "It cannot call tools or take actions, so it cannot satisfy any need to act outside the prompt.",
+        "A single, self-contained answer is straightforward for a reviewer to read and check.",
+        "With no retrieval or tools to operate, it is the simplest pattern to run."
+      ],
+      "tradeoffs": [
+        {
+          "dimension": "LatencyTarget",
+          "gain": "Lowest possible latency and operational simplicity.",
+          "cost": "No grounding in current or proprietary knowledge."
+        },
+        {
+          "dimension": "CostPressure",
+          "gain": "Cheapest per-item cost.",
+          "cost": "Least reproducible without added constraints such as schema-constrained decoding."
+        }
+      ],
+      "risks": [
+        {
+          "id": "risk.direct.hallucination",
+          "title": "Confident but ungrounded answers",
+          "description": "The model may answer fluently without any grounding, stating unsupported claims as fact.",
+          "severity": "High",
+          "relatedDimension": null,
+          "activatesAtOrAboveLevel": null,
+          "mitigationIds": [
+            "add-retrieval",
+            "freshness-disclaimer",
+            "validate-and-reject"
+          ]
+        },
+        {
+          "id": "risk.direct.stale",
+          "title": "Answers lag changing facts",
+          "description": "Because knowledge is fixed at training time, answers fall behind when facts change.",
+          "severity": "Medium",
+          "relatedDimension": "KnowledgeFreshness",
+          "activatesAtOrAboveLevel": 2,
+          "mitigationIds": [
+            "add-retrieval",
+            "freshness-disclaimer"
+          ]
+        },
+        {
+          "id": "risk.direct.format-drift",
+          "title": "Output format drift",
+          "description": "Without constrained decoding the output shape can drift between runs.",
+          "severity": "Medium",
+          "relatedDimension": null,
+          "activatesAtOrAboveLevel": null,
+          "mitigationIds": [
+            "schema-decoding",
+            "validate-and-reject"
+          ]
+        }
+      ],
+      "variantNotes": [
+        "Schema-constrained decoding tightens the output shape.",
+        "Few-shot prompting can stabilize format without adding infrastructure."
+      ]
+    },
+    {
+      "id": "DeterministicWorkflow",
+      "name": "Deterministic workflow with model steps",
+      "summary": "A pipeline whose control flow is defined in code, calling the model at specific, bounded points. The path is predictable and testable, which helps reproducibility and review, at the cost of flexibility on open-ended tasks.",
+      "capabilities": [
+        3,
+        2,
+        3,
+        4,
+        1,
+        3,
+        3,
+        2
+      ],
+      "rationales": [
+        "Data flows through a fixed set of code-defined steps, keeping exposure bounded and inspectable.",
+        "Several sequential steps add some latency beyond a single call.",
+        "A few bounded model calls per item keep cost moderate and predictable.",
+        "Code-defined control flow and validation checkpoints make runs repeatable and testable.",
+        "Unless a step explicitly fetches current data, it inherits the model's fixed knowledge.",
+        "Bounded, well-defined tool or action steps fit naturally into a coded pipeline.",
+        "Discrete, logged steps give reviewers clear checkpoints to inspect.",
+        "Several coordinated steps require more monitoring than a single call."
+      ],
+      "tradeoffs": [
+        {
+          "dimension": "DeterminismReproducibility",
+          "gain": "Predictable, testable control flow.",
+          "cost": "Less flexible for open-ended or novel inputs."
+        },
+        {
+          "dimension": "ToolActionNeed",
+          "gain": "Bounded, auditable steps for well-understood tasks.",
+          "cost": "Requires upfront engineering for each branch."
+        }
+      ],
+      "risks": [
+        {
+          "id": "risk.workflow.brittle",
+          "title": "Brittle branches",
+          "description": "Inputs that fall outside the coded branches may be mishandled.",
+          "severity": "Medium",
+          "relatedDimension": null,
+          "activatesAtOrAboveLevel": null,
+          "mitigationIds": [
+            "validate-and-reject",
+            "per-step-validation"
+          ]
+        },
+        {
+          "id": "risk.workflow.cascade",
+          "title": "Cascading step errors",
+          "description": "An error in an early step can silently corrupt later ones.",
+          "severity": "High",
+          "relatedDimension": null,
+          "activatesAtOrAboveLevel": null,
+          "mitigationIds": [
+            "per-step-validation"
+          ]
+        },
+        {
+          "id": "risk.workflow.maintenance",
+          "title": "Maintenance drift",
+          "description": "The pipeline can drift from its intent as it is edited over time.",
+          "severity": "Medium",
+          "relatedDimension": null,
+          "activatesAtOrAboveLevel": null,
+          "mitigationIds": [
+            "per-step-validation"
+          ]
+        }
+      ],
+      "variantNotes": [
+        "A validate-and-retry loop can recover from schema failures.",
+        "A deterministic router can branch by input type."
+      ]
+    },
+    {
+      "id": "RetrievalAugmentedGeneration",
+      "name": "Retrieval-augmented generation",
+      "summary": "The system retrieves relevant passages from a maintained knowledge source and conditions the model's response on them, improving grounding and freshness without retraining. Answer quality depends heavily on retrieval quality and index upkeep, and returned citations make responses easier to verify.",
+      "capabilities": [
+        2,
+        2,
+        2,
+        2,
+        4,
+        1,
+        4,
+        2
+      ],
+      "rationales": [
+        "Grounding keeps generation in-corpus, but the index itself must be secured and access-controlled.",
+        "A retrieval step before generation adds latency over a bare call.",
+        "Retrieval plus generation costs more per item than a single call.",
+        "Grounding stabilizes content, but changes in retrieval ranking or the index can shift outputs.",
+        "Answers are conditioned on a maintained corpus that can be updated independently of the model.",
+        "Retrieval is a read-only lookup; it does not take actions beyond fetching context.",
+        "Returned citations let a reviewer trace each claim back to a source.",
+        "An index and retrieval pipeline add operational surface to monitor and maintain."
+      ],
+      "tradeoffs": [
+        {
+          "dimension": "KnowledgeFreshness",
+          "gain": "Answers grounded in an independently updatable corpus.",
+          "cost": "Quality depends on retrieval relevance and index upkeep."
+        },
+        {
+          "dimension": "DataSensitivity",
+          "gain": "Citations make claims verifiable against a source.",
+          "cost": "The index itself becomes a sensitive asset that must be access-controlled."
+        }
+      ],
+      "risks": [
+        {
+          "id": "risk.rag.retrieval-miss",
+          "title": "Weak-retrieval fabrication",
+          "description": "When retrieval returns little or off-topic context, the model may still answer from memory.",
+          "severity": "High",
+          "relatedDimension": null,
+          "activatesAtOrAboveLevel": null,
+          "mitigationIds": [
+            "abstain-no-support"
+          ]
+        },
+        {
+          "id": "risk.rag.stale-index",
+          "title": "Stale index",
+          "description": "The index falls behind the source of truth if not refreshed.",
+          "severity": "Medium",
+          "relatedDimension": "KnowledgeFreshness",
+          "activatesAtOrAboveLevel": 2,
+          "mitigationIds": [
+            "scheduled-reindex"
+          ]
+        },
+        {
+          "id": "risk.rag.access-leak",
+          "title": "Retrieval access leak",
+          "description": "Retrieval may surface passages a user should not be allowed to see.",
+          "severity": "High",
+          "relatedDimension": "DataSensitivity",
+          "activatesAtOrAboveLevel": 2,
+          "mitigationIds": [
+            "per-user-access-filter"
+          ]
+        }
+      ],
+      "variantNotes": [
+        "Hybrid keyword-and-vector retrieval recovers exact-term matches that pure semantic search misses.",
+        "A re-ranking step trades a little latency for better passage selection."
+      ]
+    },
+    {
+      "id": "ToolUsingAgent",
+      "name": "Tool-using agent",
+      "summary": "The model plans and calls external tools across one or more steps to gather information or take action, adapting its path at runtime. It handles open-ended, multi-step work but is the hardest to make reproducible, bounded, and reviewable.",
+      "capabilities": [
+        1,
+        1,
+        1,
+        1,
+        3,
+        4,
+        2,
+        1
+      ],
+      "rationales": [
+        "Autonomous tool use widens the data-egress and action surface, raising exposure.",
+        "Multi-step planning and tool calls make latency high and variable.",
+        "Open-ended tool loops make per-task cost high and hard to cap.",
+        "Runtime planning and branching make identical reproduction across runs hard to guarantee.",
+        "Tools can fetch current information at run time, though grounding is less systematic than retrieval.",
+        "It is designed to select and call tools dynamically across steps, directly meeting a need to act.",
+        "A branching, multi-step trajectory is harder for a reviewer to follow end to end.",
+        "It needs monitoring, guardrails, evaluation, and incident handling to run safely."
+      ],
+      "tradeoffs": [
+        {
+          "dimension": "ToolActionNeed",
+          "gain": "Handles open-ended, multi-step tasks that need real actions.",
+          "cost": "Hardest pattern to bound, reproduce, and review."
+        },
+        {
+          "dimension": "OperationalMaturity",
+          "gain": "Adapts its path at runtime to novel situations.",
+          "cost": "Needs the most monitoring and guardrail investment."
+        }
+      ],
+      "risks": [
+        {
+          "id": "risk.agent.runaway",
+          "title": "Runaway loops",
+          "description": "Unbounded steps or tool loops drive up cost and latency.",
+          "severity": "High",
+          "relatedDimension": "ToolActionNeed",
+          "activatesAtOrAboveLevel": 2,
+          "mitigationIds": [
+            "step-budget"
+          ]
+        },
+        {
+          "id": "risk.agent.unsafe-actions",
+          "title": "Unsafe actions",
+          "description": "Action-taking tools can cause unintended side effects.",
+          "severity": "High",
+          "relatedDimension": "DataSensitivity",
+          "activatesAtOrAboveLevel": 2,
+          "mitigationIds": [
+            "read-only-tools",
+            "human-approval",
+            "egress-controls"
+          ]
+        },
+        {
+          "id": "risk.agent.not-auditable",
+          "title": "Hard to audit",
+          "description": "A branching, multi-step trajectory is hard to reconstruct for audit.",
+          "severity": "Medium",
+          "relatedDimension": "HumanReview",
+          "activatesAtOrAboveLevel": 3,
+          "mitigationIds": [
+            "human-approval"
+          ]
+        }
+      ],
+      "variantNotes": [
+        "Read-only tools reduce blast radius versus action-taking tools.",
+        "A bounded step or token budget with human checkpoints limits runaway loops."
+      ]
+    }
+  ],
+  "advisories": [
+    {
+      "pattern": "ToolUsingAgent",
+      "dimension": "DataSensitivity",
+      "op": "GreaterOrEqual",
+      "level": 3,
+      "message": "Autonomous actions on regulated data widen the egress and action surface. Treat this as a design gate: constrain tools and data access and require approvals before relying on this pattern here.",
+      "mitigationIds": [
+        "human-approval",
+        "read-only-tools",
+        "egress-controls"
+      ]
+    },
+    {
+      "pattern": "ToolUsingAgent",
+      "dimension": "ToolActionNeed",
+      "op": "Equal",
+      "level": 0,
+      "message": "No need to act outside the prompt was indicated, so an agent adds cost and operational burden without a corresponding benefit.",
+      "mitigationIds": [
+        "prefer-simpler-pattern"
+      ]
+    },
+    {
+      "pattern": "DirectStructuredCall",
+      "dimension": "DeterminismReproducibility",
+      "op": "GreaterOrEqual",
+      "level": 2,
+      "message": "If reproducibility is required, an unconstrained single call is hard to defend. Prefer schema-constrained decoding or a workflow with validation.",
+      "mitigationIds": [
+        "schema-decoding",
+        "add-workflow"
+      ]
+    },
+    {
+      "pattern": "DirectStructuredCall",
+      "dimension": "KnowledgeFreshness",
+      "op": "GreaterOrEqual",
+      "level": 2,
+      "message": "Answers drawn only from training-time knowledge will lag frequently-changing facts. Consider adding retrieval.",
+      "mitigationIds": [
+        "add-retrieval",
+        "freshness-disclaimer"
+      ]
+    }
+  ],
+  "mitigations": [
+    {
+      "id": "human-approval",
+      "description": "Require a human to approve each consequential action before it is taken.",
+      "effort": "Medium"
+    },
+    {
+      "id": "read-only-tools",
+      "description": "Restrict the agent to read-only tools so it cannot make changes.",
+      "effort": "Low"
+    },
+    {
+      "id": "egress-controls",
+      "description": "Apply allow-lists and logging to any outbound data or action.",
+      "effort": "Medium"
+    },
+    {
+      "id": "prefer-simpler-pattern",
+      "description": "Reconsider whether a direct call or workflow meets the need at lower cost.",
+      "effort": "Low"
+    },
+    {
+      "id": "schema-decoding",
+      "description": "Constrain decoding to the target schema so output shape is guaranteed.",
+      "effort": "Low"
+    },
+    {
+      "id": "add-workflow",
+      "description": "Wrap the call in a coded pipeline with validation checkpoints.",
+      "effort": "Medium"
+    },
+    {
+      "id": "add-retrieval",
+      "description": "Add a retrieval step so answers are grounded in a maintained corpus.",
+      "effort": "Medium"
+    },
+    {
+      "id": "freshness-disclaimer",
+      "description": "Surface the knowledge cutoff so users know answers may lag.",
+      "effort": "Low"
+    },
+    {
+      "id": "abstain-no-support",
+      "description": "Return an explicit no-supported-answer when retrieved context does not cover the question.",
+      "effort": "Low"
+    },
+    {
+      "id": "scheduled-reindex",
+      "description": "Re-index the corpus on a schedule so grounding stays current.",
+      "effort": "Medium"
+    },
+    {
+      "id": "per-user-access-filter",
+      "description": "Filter retrieval by the requesting user's access rights.",
+      "effort": "Medium"
+    },
+    {
+      "id": "step-budget",
+      "description": "Cap the number of steps or tokens per task.",
+      "effort": "Low"
+    },
+    {
+      "id": "validate-and-reject",
+      "description": "Validate outputs against the schema and reject or retry on failure.",
+      "effort": "Low"
+    },
+    {
+      "id": "per-step-validation",
+      "description": "Validate the output of each pipeline step before the next.",
+      "effort": "Medium"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "scn.policy-assistant",
+      "title": "Internal policy assistant",
+      "framing": "An organization wants employees to ask everyday questions about internal policies — leave, expenses, security practices — and get answers grounded in the current policy documents, with a citation to the section used. The priority is that answers reflect the latest published policy and never invent rules. This is an educational example for comparing patterns, not a description of any real deployment or its results.",
+      "assumptions": [
+        "A maintained, access-controlled corpus of policy documents exists.",
+        "Employees, not the public, are the audience.",
+        "Occasional human spot-checks are acceptable; not every answer is reviewed."
+      ],
+      "profile": {
+        "DataSensitivity": {
+          "level": 2,
+          "weightTier": 3,
+          "hard": false
+        },
+        "LatencyTarget": {
+          "level": 2,
+          "weightTier": 2,
+          "hard": false
+        },
+        "CostPressure": {
+          "level": 1,
+          "weightTier": 1,
+          "hard": false
+        },
+        "DeterminismReproducibility": {
+          "level": 1,
+          "weightTier": 1,
+          "hard": false
+        },
+        "KnowledgeFreshness": {
+          "level": 2,
+          "weightTier": 3,
+          "hard": false
+        },
+        "ToolActionNeed": {
+          "level": 1,
+          "weightTier": 1,
+          "hard": false
+        },
+        "HumanReview": {
+          "level": 1,
+          "weightTier": 2,
+          "hard": false
+        },
+        "OperationalMaturity": {
+          "level": 1,
+          "weightTier": 1,
+          "hard": false
+        }
+      }
+    },
+    {
+      "id": "scn.structured-extraction",
+      "title": "High-volume structured extraction",
+      "framing": "A team needs to turn a large, steady stream of semi-structured records into one fixed JSON schema, where per-item cost and throughput dominate and every output must validate against the target schema. Sampled outputs are audited, so results should be reproducible enough to defend a sample. All records here are synthetic illustrations; this scenario makes no claim about any real pipeline's accuracy or savings.",
+      "assumptions": [
+        "The target schema is fixed and known in advance.",
+        "Inputs are synthetic examples, not a real dataset.",
+        "A sample of outputs is audited rather than every item."
+      ],
+      "profile": {
+        "DataSensitivity": {
+          "level": 2,
+          "weightTier": 1,
+          "hard": false
+        },
+        "LatencyTarget": {
+          "level": 1,
+          "weightTier": 1,
+          "hard": false
+        },
+        "CostPressure": {
+          "level": 3,
+          "weightTier": 3,
+          "hard": false
+        },
+        "DeterminismReproducibility": {
+          "level": 2,
+          "weightTier": 3,
+          "hard": false
+        },
+        "KnowledgeFreshness": {
+          "level": 0,
+          "weightTier": 1,
+          "hard": false
+        },
+        "ToolActionNeed": {
+          "level": 0,
+          "weightTier": 1,
+          "hard": false
+        },
+        "HumanReview": {
+          "level": 2,
+          "weightTier": 2,
+          "hard": false
+        },
+        "OperationalMaturity": {
+          "level": 2,
+          "weightTier": 1,
+          "hard": false
+        }
+      }
+    },
+    {
+      "id": "scn.supervised-research",
+      "title": "Human-supervised research",
+      "framing": "An analyst uses the system to gather information across many sources, synthesize it, and draft findings, with a person reviewing everything before it is used. The work is open-ended and multi-step and should reflect current information; traceability of what was consulted matters more than speed or unit cost. This is a teaching example for comparing approaches, not an account of a real project or its outcomes.",
+      "assumptions": [
+        "A person reviews every output before it is used anywhere.",
+        "The task is open-ended and spans multiple sources.",
+        "Speed and unit cost are secondary to traceability."
+      ],
+      "profile": {
+        "DataSensitivity": {
+          "level": 1,
+          "weightTier": 1,
+          "hard": false
+        },
+        "LatencyTarget": {
+          "level": 0,
+          "weightTier": 1,
+          "hard": false
+        },
+        "CostPressure": {
+          "level": 1,
+          "weightTier": 1,
+          "hard": false
+        },
+        "DeterminismReproducibility": {
+          "level": 1,
+          "weightTier": 1,
+          "hard": false
+        },
+        "KnowledgeFreshness": {
+          "level": 3,
+          "weightTier": 3,
+          "hard": false
+        },
+        "ToolActionNeed": {
+          "level": 3,
+          "weightTier": 3,
+          "hard": false
+        },
+        "HumanReview": {
+          "level": 3,
+          "weightTier": 3,
+          "hard": false
+        },
+        "OperationalMaturity": {
+          "level": 1,
+          "weightTier": 1,
+          "hard": false
+        }
+      }
+    }
+  ]
+}

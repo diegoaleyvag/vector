@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vector.local/schemas/vector-knowledge.v1.schema.json",
+  "title": "Vector knowledge content file (v1)",
+  "description": "Versioned MCDA content: constraint dimensions, architecture patterns, advisories, mitigation pool, and example scenarios. Referential integrity that JSON Schema cannot express (e.g. mitigation-id references, demandCurve.length == levels.length) is enforced by Vector.Data's KnowledgeMapper at load time and documented via $comment below.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "rulesVersion",
+    "contentRevision",
+    "engineCompatRange",
+    "nearTieMarginBasisPoints",
+    "constraints",
+    "patterns",
+    "advisories",
+    "mitigations",
+    "scenarios"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "rulesVersion": { "type": "string", "minLength": 1 },
+    "contentRevision": { "type": "integer", "minimum": 1 },
+    "engineCompatRange": { "type": "string", "minLength": 1 },
+    "nearTieMarginBasisPoints": { "type": "integer", "minimum": 0, "maximum": 10000 },
+    "constraints": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/constraint" }
+    },
+    "patterns": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "$ref": "#/$defs/pattern" }
+    },
+    "advisories": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/advisory" }
+    },
+    "mitigations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/mitigation" }
+    },
+    "scenarios": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/scenario" }
+    }
+  },
+  "$defs": {
+    "dimensionName": {
+      "type": "string",
+      "enum": [
+        "DataSensitivity",
+        "LatencyTarget",
+        "CostPressure",
+        "DeterminismReproducibility",
+        "KnowledgeFreshness",
+        "ToolActionNeed",
+        "HumanReview",
+        "OperationalMaturity"
+      ]
+    },
+    "patternId": {
+      "type": "string",
+      "enum": [
+        "DirectStructuredCall",
+        "DeterministicWorkflow",
+        "RetrievalAugmentedGeneration",
+        "ToolUsingAgent"
+      ]
+    },
+    "polarity": {
+      "type": "string",
+      "enum": ["Demand", "Capacity"]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["Low", "Medium", "High"]
+    },
+    "effort": {
+      "type": "string",
+      "enum": ["Low", "Medium", "High"]
+    },
+    "advisoryOp": {
+      "type": "string",
+      "enum": ["GreaterOrEqual", "Equal", "LessOrEqual"]
+    },
+    "level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "name", "help", "evidence"],
+      "properties": {
+        "value": { "type": "integer", "minimum": 0 },
+        "name": { "type": "string", "minLength": 1 },
+        "help": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "string", "minLength": 1 }
+      }
+    },
+    "constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "title", "polarity", "help", "maxLevel", "defaultWeightTier", "levels", "demandCurve"],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/dimensionName" },
+        "title": { "type": "string", "minLength": 1 },
+        "polarity": { "$ref": "#/$defs/polarity" },
+        "help": { "type": "string", "minLength": 1 },
+        "maxLevel": { "type": "integer", "minimum": 0 },
+        "defaultWeightTier": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "levels": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/level" }
+        },
+        "demandCurve": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "integer", "minimum": 0, "maximum": 4 },
+          "$comment": "Must be the same length as sibling 'levels' array; enforced by KnowledgeMapper, not expressible as a plain JSON Schema sibling-length constraint."
+        }
+      }
+    },
+    "tradeoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "gain", "cost"],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/dimensionName" },
+        "gain": { "type": "string", "minLength": 1 },
+        "cost": { "type": "string", "minLength": 1 }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "description", "severity", "relatedDimension", "activatesAtOrAboveLevel", "mitigationIds"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "severity": { "$ref": "#/$defs/severity" },
+        "relatedDimension": {
+          "oneOf": [
+            { "$ref": "#/$defs/dimensionName" },
+            { "type": "null" }
+          ]
+        },
+        "activatesAtOrAboveLevel": {
+          "oneOf": [
+            { "type": "integer", "minimum": 0 },
+            { "type": "null" }
+          ]
+        },
+        "mitigationIds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "$comment": "Each id must resolve against the top-level 'mitigations' pool; enforced by KnowledgeMapper (throws DataMappingException on an unknown id)."
+        }
+      }
+    },
+    "pattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "summary", "capabilities", "rationales", "tradeoffs", "risks", "variantNotes"],
+      "properties": {
+        "id": { "$ref": "#/$defs/patternId" },
+        "name": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "capabilities": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": { "type": "integer", "minimum": 0, "maximum": 4 }
+        },
+        "rationales": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "tradeoffs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/tradeoff" }
+        },
+        "risks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/risk" }
+        },
+        "variantNotes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "mitigation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "effort"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "effort": { "$ref": "#/$defs/effort" }
+      }
+    },
+    "advisory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pattern", "dimension", "op", "level", "message", "mitigationIds"],
+      "properties": {
+        "pattern": { "$ref": "#/$defs/patternId" },
+        "dimension": { "$ref": "#/$defs/dimensionName" },
+        "op": { "$ref": "#/$defs/advisoryOp" },
+        "level": { "type": "integer", "minimum": 0 },
+        "message": { "type": "string", "minLength": 1 },
+        "mitigationIds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "$comment": "Each id must resolve against the top-level 'mitigations' pool; enforced by KnowledgeMapper (throws DataMappingException on an unknown id)."
+        }
+      }
+    },
+    "profileSetting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "weightTier", "hard"],
+      "properties": {
+        "level": { "type": "integer", "minimum": 0 },
+        "weightTier": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "hard": { "type": "boolean" }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "framing", "assumptions", "profile"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "framing": { "type": "string", "minLength": 1 },
+        "assumptions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "DataSensitivity",
+            "LatencyTarget",
+            "CostPressure",
+            "DeterminismReproducibility",
+            "KnowledgeFreshness",
+            "ToolActionNeed",
+            "HumanReview",
+            "OperationalMaturity"
+          ],
+          "properties": {
+            "DataSensitivity": { "$ref": "#/$defs/profileSetting" },
+            "LatencyTarget": { "$ref": "#/$defs/profileSetting" },
+            "CostPressure": { "$ref": "#/$defs/profileSetting" },
+            "DeterminismReproducibility": { "$ref": "#/$defs/profileSetting" },
+            "KnowledgeFreshness": { "$ref": "#/$defs/profileSetting" },
+            "ToolActionNeed": { "$ref": "#/$defs/profileSetting" },
+            "HumanReview": { "$ref": "#/$defs/profileSetting" },
+            "OperationalMaturity": { "$ref": "#/$defs/profileSetting" }
+          },
+          "$comment": "Must cover all 8 canonical dimensions exactly once; enforced structurally here via required+additionalProperties:false."
+        }
+      }
+    }
+  }
+}
