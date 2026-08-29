@@ -9,12 +9,15 @@
     var maxLevel = def.Levels.Length - 1;
 }
 
-<fieldset>
-    <legend>@def.Title</legend>
-    <p>@def.Help</p>
+<fieldset class="constraint-row" aria-describedby="@(rowId + "-help")">
+    <legend>
+        <span class="constraint-code">@((int)Dimension + 1).ToString("00", CultureInfo.InvariantCulture)</span>
+        @def.Title
+    </legend>
+    <p id="@(rowId + "-help")" class="constraint-help">@def.Help</p>
 
     <div class="field-row">
-        <label for="@(rowId + "-range")">Level for @def.Title</label>
+        <label for="@(rowId + "-range")">Level <span class="sr-only">for @def.Title</span></label>
         <input id="@(rowId + "-range")"
                type="range"
                min="0"
@@ -25,7 +28,7 @@
     </div>
 
     <div class="field-row">
-        <label for="@(rowId + "-number")">Level number for @def.Title</label>
+        <label for="@(rowId + "-number")">Level number <span class="sr-only">for @def.Title</span></label>
         <input id="@(rowId + "-number")"
                type="number"
                min="0"
@@ -35,11 +38,11 @@
                @onchange="OnLevelInput" />
     </div>
 
-    <p><strong>@level.Name</strong> — @level.Help</p>
-    <p class="weight-sum-note">Evidence: @level.Evidence</p>
+    <p class="current-level"><strong>@level.Name</strong><span>@level.Help</span></p>
+    <p class="evidence-note"><span class="fd-shell__label">Evidence</span> @level.Evidence</p>
 
     <div class="field-row">
-        <label for="@(rowId + "-weight")">Importance of @def.Title</label>
+        <label for="@(rowId + "-weight")">Importance <span class="sr-only">of @def.Title</span></label>
         <select id="@(rowId + "-weight")" value="@setting.WeightTier.ToString(CultureInfo.InvariantCulture)" @onchange="OnWeightChanged">
             <option value="0">Ignore</option>
             <option value="1">Low</option>
@@ -49,8 +52,10 @@
     </div>
 
     <div class="field-row">
-        <label for="@(rowId + "-hard")">Treat @def.Title as a hard requirement</label>
-        <input id="@(rowId + "-hard")" type="checkbox" checked="@setting.IsHard" @onchange="OnHardChanged" />
+        <label class="checkbox-label" for="@(rowId + "-hard")">
+            <input id="@(rowId + "-hard")" type="checkbox" checked="@setting.IsHard" @onchange="OnHardChanged" />
+            <span>Treat as a hard requirement</span>
+        </label>
     </div>
 </fieldset>
 

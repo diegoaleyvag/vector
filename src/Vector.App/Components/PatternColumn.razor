@@ -3,7 +3,10 @@
 }
 
 <article class="pattern-column">
-    <h3>Rank @Result.Rank — @pattern.Name</h3>
+    <div class="pattern-heading">
+        <span class="pattern-rank">Rank @Result.Rank</span>
+        <h3>@pattern.Name</h3>
+    </div>
 
     @if (!Result.IsEligible)
     {
@@ -16,7 +19,8 @@
 
     <p>@pattern.Summary</p>
     <p>
-        Score: @Result.ScoreScaled.ToString("N0", CultureInfo.InvariantCulture) / 1,000,000
+        <span class="pattern-score-label">Score</span>
+        @Result.ScoreScaled.ToString("N0", CultureInfo.InvariantCulture) / 1,000,000
         (@((Result.Score * 100).ToString("0.0", CultureInfo.InvariantCulture))%)
     </p>
 

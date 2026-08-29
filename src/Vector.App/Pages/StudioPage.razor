@@ -3,12 +3,19 @@
 @inject StudioState State
 @inject NavigationManager Nav
 
-<h1 @ref="_heading" tabindex="-1">Vector — architecture decision support</h1>
-<p>
-    Explore which of four canonical LLM architecture patterns is leading under your constraints. Vector
-    offers decision support, not a verdict — it never claims one architecture is "best" or "correct", only
-    which one is leading under the constraints you set.
-</p>
+<div class="studio-intro">
+    <p class="eyebrow">Decision studio / 01</p>
+    <h1 @ref="_heading" tabindex="-1">Which architecture fits the constraints?</h1>
+    <p class="lede">
+        Compare four bounded architecture patterns against the constraints you set. Vector keeps the
+        assumptions, weights, hard requirements, and trade-offs visible. The result is decision support,
+        not a verdict.
+    </p>
+    <p class="method-strip">
+        <span class="fd-shell__label">Method</span>
+        Deterministic, integer-only scoring with inspectable contributions and a reproducible digest.
+    </p>
+</div>
 
 @if (_banner is not null)
 {
@@ -19,12 +26,27 @@
 }
 
 <ScenarioPicker OnScenarioSelected="RequestFocus" />
-<ConstraintEditor />
-<ComparisonView />
-<SensitivityPanel />
-<RiskMitigationList />
-<RationaleEditor />
-<ActionBar />
+
+<div class="studio-workspace">
+    <ConstraintEditor />
+    <ComparisonView />
+</div>
+
+<div class="studio-followup">
+    <SensitivityPanel />
+    <RiskMitigationList />
+    <RationaleEditor />
+    <ActionBar />
+</div>
+
+<section id="methodology" class="methodology-note" aria-labelledby="methodology-heading">
+    <p class="eyebrow">Method / 04</p>
+    <h2 id="methodology-heading">Read the comparison as a trace</h2>
+    <p>
+        Scores are coarse ordinal judgements, not measurements. A close result is effectively a tie;
+        inspect the contribution detail, hard requirements, risks, and sensitivity before recording a decision.
+    </p>
+</section>
 
 @code {
     private ElementReference _heading;

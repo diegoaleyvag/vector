@@ -1,8 +1,12 @@
 @implements IDisposable
 @inject StudioState State
 
-<section class="scenario-picker card" aria-labelledby="scenario-picker-heading">
-    <h2 id="scenario-picker-heading">Scenario</h2>
+<section class="scenario-picker shell-panel" aria-labelledby="scenario-picker-heading">
+    <div class="section-heading">
+        <p class="eyebrow">Start here / 02</p>
+        <h2 id="scenario-picker-heading">Choose a starting scenario</h2>
+        <p>Use an educational example to see the decision model in motion, or begin with a blank profile.</p>
+    </div>
 
     <div role="radiogroup" aria-labelledby="scenario-picker-heading" class="scenario-options">
         @foreach (var scenario in State.Scenarios)
@@ -31,7 +35,8 @@
 
     @if (SelectedScenario is not null)
     {
-        <div class="scenario-framing">
+        <div class="scenario-framing" aria-label="Scenario framing">
+            <p class="framing-label">Working frame</p>
             @if (!string.IsNullOrEmpty(SelectedScenario.Description))
             {
                 <p>@SelectedScenario.Description</p>

@@ -1,22 +1,42 @@
 @implements IDisposable
 @inject StudioState State
 
-<section class="constraint-editor card" aria-labelledby="constraints-heading">
-    <h2 id="constraints-heading">Constraints</h2>
-    <p class="weight-sum-note">
-        Importance is set per dimension as a tier (Ignore/Low/Medium/High); Vector never silently renormalizes it.
-        Current tier total: @TotalWeightTier.
-    </p>
+<section class="constraint-editor shell-panel" aria-labelledby="constraints-heading">
+    <div class="section-heading">
+        <p class="eyebrow">Shape the inputs / 03</p>
+        <h2 id="constraints-heading">Constraints</h2>
+        <p>
+            Set the level, importance, and hard-requirement status for each dimension. The comparison updates
+            as you work. Current tier total: <strong>@TotalWeightTier</strong>.
+        </p>
+    </div>
 
-    @foreach (var dimension in Dimensions)
-    {
-        <ConstraintRow Dimension="dimension" />
-    }
+    <div class="constraint-list">
+        @foreach (var dimension in PrimaryDimensions)
+        {
+            <ConstraintRow Dimension="dimension" />
+        }
+
+        <details class="advanced-constraints">
+            <summary>
+                <span>Advanced constraints</span>
+                <span class="summary-meta">5 more dimensions</span>
+            </summary>
+            @foreach (var dimension in AdvancedDimensions)
+            {
+                <ConstraintRow Dimension="dimension" />
+            }
+        </details>
+    </div>
 </section>
 
 @code {
     private static readonly ConstraintDimension[] Dimensions =
         [.. Enum.GetValues<ConstraintDimension>().OrderBy(d => (int)d)];
+
+    private static readonly ConstraintDimension[] PrimaryDimensions = Dimensions[..3];
+
+    private static readonly ConstraintDimension[] AdvancedDimensions = Dimensions[3..];
 
     private int TotalWeightTier => State.Profile.Settings.Sum(s => s.WeightTier);
 
