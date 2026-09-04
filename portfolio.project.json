@@ -6,7 +6,7 @@
   "decision": "Which architecture fits the constraints?",
   "learningOrigin": "2026-07",
   "buildStarted": "2026-08-13",
-  "status": "verified",
+  "status": "released",
   "summary": "A transparent studio for comparing AI architecture patterns under explicit constraints.",
   "capabilities": [
     {
@@ -32,11 +32,16 @@
       "type": "static-build",
       "description": "The Blazor WebAssembly app publishes as static output without a backend, database, model, or API key.",
       "reference": "docs/adr/0001-static-wasm-architecture.md"
+    },
+    {
+      "type": "production deployment",
+      "description": "C8 Git READY/public/smoke PASS.",
+      "reference": "https://five-decisions-vector-nwuesmctm-atomiczdaemons-projects.vercel.app (dpl_h7cNbh5APmAVpdCayKnwZP2hGrXN; main@ec25f55bfcce0095d308c32ae22b6000a34540b3)"
     }
   ],
   "links": {
     "repository": "https://github.com/diegoaleyvag/vector",
-    "demo": null,
+    "demo": "https://five-decisions-vector.vercel.app",
     "methodology": null
   }
 }
