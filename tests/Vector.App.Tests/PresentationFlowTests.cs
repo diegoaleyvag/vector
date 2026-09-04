@@ -23,6 +23,9 @@ public sealed class PresentationFlowTests : VectorBunitContext
         Assert.Contains("trace-disclosure", markup, StringComparison.Ordinal);
     }
 
+    private const string MethodologyPermalink =
+        "https://github.com/diegoaleyvag/vector/blob/384dd00294ffec38f215b989bb9335404793a0d8/docs/decision-method.md";
+
     [Fact]
     public void ShellRetainsReturnAndMethodologyLinks_WithPublicRepositoryLink()
     {
@@ -34,5 +37,24 @@ public sealed class PresentationFlowTests : VectorBunitContext
         Assert.Contains("Source repository", cut.Markup, StringComparison.Ordinal);
         Assert.Contains("https://github.com/diegoaleyvag/vector", cut.Markup, StringComparison.Ordinal);
         Assert.Contains("No stable public demo", cut.Markup, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ShellMethodologyLinks_PointToExactPublicPermalink_AndAreAccessible()
+    {
+        var cut = RenderComponent<MainLayout>(parameters => parameters
+            .Add(p => p.Body, (RenderFragment)(builder => { })));
+
+        var methodologyLinks = cut.FindAll("a")
+            .Where(a => a.TextContent.Trim() == "Methodology")
+            .ToList();
+
+        Assert.Equal(2, methodologyLinks.Count);
+        Assert.All(methodologyLinks, link =>
+        {
+            Assert.Equal(MethodologyPermalink, link.GetAttribute("href"));
+            Assert.Equal("_blank", link.GetAttribute("target"));
+            Assert.Equal("noopener noreferrer", link.GetAttribute("rel"));
+        });
     }
 }

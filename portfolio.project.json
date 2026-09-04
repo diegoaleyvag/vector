@@ -42,6 +42,6 @@
   "links": {
     "repository": "https://github.com/diegoaleyvag/vector",
     "demo": "https://five-decisions-vector.vercel.app",
-    "methodology": null
+    "methodology": "https://github.com/diegoaleyvag/vector/blob/384dd00294ffec38f215b989bb9335404793a0d8/docs/decision-method.md"
   }
 }
