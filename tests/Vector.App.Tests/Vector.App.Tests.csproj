@@ -31,6 +31,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>data\vector-knowledge.v1.json</Link>
     </Content>
+    <Content Include="..\..\portfolio.project.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>portfolio.project.json</Link>
+    </Content>
+    <Content Include="..\..\src\Vector.App\wwwroot\css\app.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>css\app.css</Link>
+    </Content>
+    <Content Include="Fixtures\portfolio.project.schema.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>Fixtures\portfolio.project.schema.json</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -1,20 +1,62 @@
 @implements IDisposable
 @inject StudioState State
 
-<section aria-labelledby="comparison-heading">
-    <h2 id="comparison-heading">Comparison</h2>
+<section aria-labelledby="comparison-heading" class="comparison-view shell-panel">
+    <div class="section-heading">
+        <p class="eyebrow">Keep the result in view / 05</p>
+        <h2 id="comparison-heading">Decision comparison</h2>
+        <p>
+            The current ranking is a reading of this profile. Eligible patterns appear before vetoed patterns,
+            and close scores should be treated as co-leading.
+        </p>
+    </div>
 
     <HardConflictPanel Rankings="State.Outcome.Rankings" Rules="State.Rules" />
 
-    <ScoreChart Rankings="State.Outcome.Rankings" Rules="State.Rules" />
-    <ScoreTable Rankings="State.Outcome.Rankings" Rules="State.Rules" />
+    @{
+        var leader = State.Outcome.Rankings[0];
+        var leaderPattern = State.Rules.Pattern(leader.Pattern);
+    }
 
-    <div class="comparison-columns">
-        @foreach (var result in State.Outcome.Rankings)
-        {
-            <PatternColumn Result="result" Rules="State.Rules" />
-        }
+    <div class="decision-summary" aria-live="polite">
+        <div>
+            <p class="summary-label">Current read</p>
+            <h3>@(State.Outcome.HasNearTie ? "Co-leading patterns" : "Leading pattern")</h3>
+            <p>
+                <strong>@leaderPattern.Name</strong>
+                @if (State.Outcome.HasNearTie)
+                {
+                    <span>and the next eligible pattern are effectively tied.</span>
+                }
+                else
+                {
+                    <span>is currently first under this profile.</span>
+                }
+            </p>
+        </div>
+        <div class="summary-digest">
+            <span class="fd-shell__label">Config digest</span>
+            <code>@State.Outcome.ConfigDigest</code>
+        </div>
     </div>
+
+    <div class="score-overview">
+        <ScoreChart Rankings="State.Outcome.Rankings" Rules="State.Rules" />
+        <ScoreTable Rankings="State.Outcome.Rankings" Rules="State.Rules" />
+    </div>
+
+    <details class="trace-disclosure">
+        <summary>
+            <span>Inspect pattern reasoning</span>
+            <span class="summary-meta">Scores, conflicts, and contributions</span>
+        </summary>
+        <div class="comparison-columns">
+            @foreach (var result in State.Outcome.Rankings)
+            {
+                <PatternColumn Result="result" Rules="State.Rules" />
+            }
+        </div>
+    </details>
 </section>
 
 @code {

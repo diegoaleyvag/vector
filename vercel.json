@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "buildCommand": "bash scripts/vercel-build.sh",
+  "outputDirectory": "src/Vector.App/bin/Release/net10.0/publish/wwwroot",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
