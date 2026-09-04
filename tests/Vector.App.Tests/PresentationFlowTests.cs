@@ -36,7 +36,13 @@ public sealed class PresentationFlowTests : VectorBunitContext
         Assert.Contains("Methodology", cut.Markup, StringComparison.Ordinal);
         Assert.Contains("Source repository", cut.Markup, StringComparison.Ordinal);
         Assert.Contains("https://github.com/diegoaleyvag/vector", cut.Markup, StringComparison.Ordinal);
-        Assert.Contains("No stable public demo", cut.Markup, StringComparison.Ordinal);
+
+        var demoLinks = cut.FindAll("a")
+            .Where(a => a.TextContent.Trim() == "Stable public demo")
+            .ToList();
+
+        Assert.Single(demoLinks);
+        Assert.Equal("https://five-decisions-vector.vercel.app", demoLinks[0].GetAttribute("href"));
     }
 
     [Fact]
