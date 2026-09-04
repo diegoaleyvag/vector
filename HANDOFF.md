@@ -1,7 +1,11 @@
 # HANDOFF — Vector
 
-Status: **foundation vertical slice, in progress.** Local-only repository on `main`; no remote, no
-push, no deploy. Commits are authored solely by the repository owner.
+Status: **foundation vertical slice, in progress.** Git remote:
+`git@github.com:diegoaleyvag/vector.git`. Integration work is on
+`feat/five-decisions-integration`
+([PR #1](https://github.com/diegoaleyvag/vector/pull/1)); default branch remains `main` until an
+owner merges. Repository visibility is private; no production promotion or stable public demo is
+claimed here. Commits are authored solely by the repository owner.
 
 ## Environment
 
@@ -34,13 +38,20 @@ dotnet publish src/Vector.App -c Release
 
 ## Test evidence
 
-| Suite | Focus | Result |
-|---|---|---|
-| `Vector.Engine.Tests` | Determinism, golden + culture-invariant digest, hard-veto dominance, accounting identity, order-invariance, soft-score level flip, near-tie, sensitivity, architecture (no Blazor/JSON in Domain/Engine). | **38 passed** |
-| `Vector.Data.Tests` | Content load/mapping validation, calibration vs. the real engine (see below), share-codec round-trip/fuzz/never-throws/decompression-bound, Markdown export golden + no-auto-fill. | **46 passed** |
-| `Vector.App.Tests` | bUnit core-flow tests (scenario load, live recompute, hard-conflict persistence, contribution inspection, chart textual alternative, sensitivity, no-auto-fill rationale, share round-trip, bad-link rejection, export interop, accessible names, non-claims copy). | **14 passed** |
+Run the full gate from the repository root:
 
-**Total: 98 tests, all green.** `dotnet format --verify-no-changes` passes.
+```bash
+dotnet test Vector.slnx
+dotnet format --verify-no-changes
+```
+
+| Suite | Focus |
+|---|---|
+| `Vector.Engine.Tests` | Determinism, golden + culture-invariant digest, hard-veto dominance, accounting identity, order-invariance, soft-score level flip, near-tie, sensitivity, architecture (no Blazor/JSON in Domain/Engine). |
+| `Vector.Data.Tests` | Content load/mapping validation, calibration vs. the real engine (see below), share-codec round-trip/fuzz/never-throws/decompression-bound, Markdown export golden + no-auto-fill. |
+| `Vector.App.Tests` | bUnit core-flow tests (scenario load, live recompute, hard-conflict persistence, contribution inspection, chart textual alternative, sensitivity, no-auto-fill rationale, share round-trip, bad-link rejection, export interop, accessible names, non-claims copy, presentation/manifest checks). |
+
+All suites must pass before release review. Re-run after any engine, data, content, or UI copy change.
 
 ### Browser verification (real WebAssembly runtime)
 
@@ -103,5 +114,6 @@ profile with a "different version of Vector" banner. No unhandled exceptions.
 
 ## Constraints honored
 
-No push, deploy, visibility change, or backdating. No private/certification questions, employer code,
-secrets, or fabricated real-world outcomes entered the repository. All scenario language is original.
+No public visibility change, production promotion, or backdating in this lane. No private/certification
+questions, employer code, secrets, or fabricated real-world outcomes entered the repository. All
+scenario language is original.

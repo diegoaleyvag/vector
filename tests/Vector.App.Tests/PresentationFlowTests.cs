@@ -24,14 +24,15 @@ public sealed class PresentationFlowTests : VectorBunitContext
     }
 
     [Fact]
-    public void ShellRetainsReturnAndMethodologyLinks_WithConservativeRepositoryStatus()
+    public void ShellRetainsReturnAndMethodologyLinks_WithPublicRepositoryLink()
     {
         var cut = RenderComponent<MainLayout>(parameters => parameters
             .Add(p => p.Body, (RenderFragment)(builder => { })));
 
         Assert.Contains("Return to studio", cut.Markup, StringComparison.Ordinal);
         Assert.Contains("Methodology", cut.Markup, StringComparison.Ordinal);
-        Assert.Contains("Repository pending C2", cut.Markup, StringComparison.Ordinal);
-        Assert.Contains("Demo pending C2/C3", cut.Markup, StringComparison.Ordinal);
+        Assert.Contains("Source repository", cut.Markup, StringComparison.Ordinal);
+        Assert.Contains("https://github.com/diegoaleyvag/vector", cut.Markup, StringComparison.Ordinal);
+        Assert.Contains("No stable public demo", cut.Markup, StringComparison.Ordinal);
     }
 }
