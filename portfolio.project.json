@@ -35,8 +35,8 @@
     },
     {
       "type": "production deployment",
-      "description": "C8 Git READY/public/smoke PASS.",
-      "reference": "https://five-decisions-vector-nwuesmctm-atomiczdaemons-projects.vercel.app (dpl_h7cNbh5APmAVpdCayKnwZP2hGrXN; main@ec25f55bfcce0095d308c32ae22b6000a34540b3)"
+      "description": "Git-sourced production deployment verified through hosted smoke tests.",
+      "reference": "https://five-decisions-vector-nwuesmctm-atomiczdaemons-projects.vercel.app"
     }
   ],
   "links": {
