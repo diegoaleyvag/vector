@@ -30,6 +30,22 @@ public sealed class ManifestAndContractTests
     }
 
     [Fact]
+    public void PortfolioManifest_PublishesExactMethodologyPermalink()
+    {
+        using var manifest = JsonDocument.Parse(
+            File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "portfolio.project.json")));
+
+        var methodology = manifest.RootElement
+            .GetProperty("links")
+            .GetProperty("methodology")
+            .GetString();
+
+        Assert.Equal(
+            "https://github.com/diegoaleyvag/vector/blob/384dd00294ffec38f215b989bb9335404793a0d8/docs/decision-method.md",
+            methodology);
+    }
+
+    [Fact]
     public void AppStylesheet_VendorsApprovedBrandVersionAndHashes()
     {
         var css = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "css", "app.css"));
