@@ -6,7 +6,7 @@
   "decision": "Which architecture fits the constraints?",
   "learningOrigin": "2026-07",
   "buildStarted": "2026-08-13",
-  "status": "building",
+  "status": "verified",
   "summary": "A transparent studio for comparing AI architecture patterns under explicit constraints.",
   "capabilities": [
     {
