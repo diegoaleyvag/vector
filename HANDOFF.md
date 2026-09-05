@@ -1,11 +1,21 @@
 # HANDOFF — Vector
 
+**Current status (2026-09-05): released and public.** `portfolio.project.json` records
+`status: "released"`, with `demo` (<https://five-decisions-vector.vercel.app>) and `methodology`
+links populated and a promoted production deployment recorded as evidence. Git remote:
+`git@github.com:diegoaleyvag/vector.git`; default branch is `main`.
+
+<details>
+<summary>Foundation-slice snapshot (superseded by the status above; kept verbatim as history)</summary>
+
 Status: **foundation vertical slice, in progress.** Git remote:
 `git@github.com:diegoaleyvag/vector.git`. Integration work is on
 `feat/five-decisions-integration`
 ([PR #1](https://github.com/diegoaleyvag/vector/pull/1)); default branch remains `main` until an
 owner merges. Repository visibility is private; no production promotion or stable public demo is
 claimed here. Commits are authored solely by the repository owner.
+
+</details>
 
 ## Environment
 
