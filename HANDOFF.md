@@ -11,10 +11,9 @@ links populated and a promoted production deployment recorded as evidence. Git r
 Status: **foundation vertical slice, in progress.** Git remote:
 `git@github.com:diegoaleyvag/vector.git`. Integration work is on
 `feat/five-decisions-integration`
-([PR #1](https://github.com/diegoaleyvag/vector/pull/1), merged); default branch remains `main`
-until an owner merges. Repository visibility was private at the time this snapshot was written;
-no production promotion or stable public demo was claimed then. Commits are authored solely by
-the repository owner.
+([PR #1](https://github.com/diegoaleyvag/vector/pull/1)); default branch remains `main` until an
+owner merges. Repository visibility is private; no production promotion or stable public demo is
+claimed here. Commits are authored solely by the repository owner.
 
 </details>
 
